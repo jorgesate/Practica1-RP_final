@@ -8,6 +8,7 @@ from matplotlib.colors import ListedColormap
 from sklearn import metrics, covariance
 from GMMBayes import *
 from GaussianBayes import *
+from KNNClassifier import *
 try:
     # for Python2
     from Tkinter import *   # notice capitalized T in Tkinter
@@ -481,6 +482,25 @@ def main(GAUSSIANS):
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_gauss, cmap=plt.cm.get_cmap('jet'))
     plt.show()
+
+    # ---------------------------------------------------------------------
+    # KNN Classifier
+
+    KNN = KNNClassifier(50)
+    KNN.fit(X_train, y_train)
+    predicted_KNN = KNN.predict(X_test)
+
+    conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
+
+    plt.figure()
+    plt.subplot(1,2,1)
+    mytitle = exp_name + ': KNN classifier (Test)'
+    plot_classification_results(KNN, data_range, X_test, y=y_test, title=mytitle)
+    plt.subplot(1,2,2)
+    plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
+    plt.show()
+
+
 
     #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA

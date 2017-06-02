@@ -8,21 +8,27 @@ import math
 # KNeighborsClassifier(n_neighbors=5, weights='uniform''distance', algorithm='auto',
 #       leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=1, **kwargs)
 
+
 class KNNClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self):
         self.neigbours = 0
         self.kmax = 5
         self.KNNclsf = None
+        self.scores = []
 
     def fit(self, X, y):
 
         for k in range(1, self.kmax):
-            self.KNNclsf = KNeighborsClassifier(n_neighbors=self.neigbours)
+            KNNclsf = KNeighborsClassifier(n_neighbors=k)
             # TODO probar con weights 'distance' tambien
-            scores = cross_val_score(self.KNNclsf, X, y, cv=5, scoring='f1_macro')
+            score_k = cross_val_score(KNNclsf, X, y, cv=5, scoring='f1_macro')
+            self.scores[k](score_k.mean())
 
-    def predict(self):
+        ind_max = np.argmax(self.scores)
+        self.KNNclsf = KNeighborsClassifier(n_neighbors=ind_max)
 
-        return self.KNNclsf.predict
+    def predict(self, X):
+
+        return self.KNNclsf.predict(X)
 
