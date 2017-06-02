@@ -9,7 +9,7 @@ from sklearn import metrics, covariance
 from GMMBayes import *
 from GaussianBayes import *
 from KNNClassifier import *
-# from ParzenClassifier import *
+from ParzenClassifier import *
 from sklearn.model_selection import KFold, ShuffleSplit, cross_val_score
 
 
@@ -502,6 +502,26 @@ def main(GAUSSIANS):
     fig2.show()
 
     print ('KNN Done. Score: {:.2f}  K = {:d}'.format(KNN.score(X_test, y_test), KNN.k_best))
+
+    # ---------------------------------------------------------------------
+    # PARZEN Classifier
+
+    PARZ = ParzenClassifier(80)
+    PARZ.fit(X_train, y_train.ravel())
+    predicted_PARZ = PARZ.predict(X_test)
+
+    conf_matrix_PARZ = metrics.confusion_matrix(y_test, predicted_PARZ)
+
+    fig2 = plt.figure(2)
+    mytitle = exp_name + ': Parzen classifier'
+    fig2.canvas.set_window_title(mytitle)
+    plt.subplot(1,2,1)
+    plot_classification_results(PARZ, data_range, X_test, y=y_test, title=mytitle)
+    plt.subplot(1,2,2)
+    plot_confusion_matrix(conf_matrix_PARZ, cmap=plt.cm.get_cmap('jet'))
+    fig2.show()
+
+    print ('Parzen Done. Score: {:.2f}  K = {:d}'.format(PARZ.score(X_test, y_test), PARZ.r_best))
 
 #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
