@@ -459,13 +459,15 @@ def main(GAUSSIANS):
     xx,yy,z = compute_estimated_labels_map(clf, data_range)
 
     # Plot the classification ground truth Bayes min error boundaries.
-    plt.figure()
-    plt.subplot(1, 2, 1)
+    fig0 = plt.figure(0)
     mytitle = exp_name + ' real class boundaries + Training samples'
+    fig0.canvas.set_window_title(mytitle)
+    plt.subplot(1, 2, 1)
     plot_classification_results(clf, data_range, X_train, y=y_train, title=mytitle)
     plt.subplot(1, 2, 2)
     mytitle = exp_name + ' real class boundaries + Testing samples'
     plot_classification_results(clf, data_range, X_test, y=y_test, title=mytitle)
+    fig0.show()
 
     # ----------------------------------------------------------------
     # Gaussians based Bayes classifier training and evaluation
@@ -475,30 +477,34 @@ def main(GAUSSIANS):
 
     conf_matrix_gauss = metrics.confusion_matrix(y_test, predicted_bayes)
 
-    plt.figure()
-    plt.subplot(1,2,1)
+    fig1 = plt.figure(1)
     mytitle = exp_name + ': Gaussian Bayes classifier (Test)'
+    fig1.canvas.set_window_title(mytitle)
+    plt.subplot(1,2,1)
     plot_classification_results(gaussBayes, data_range, X_test, y=y_test, title=mytitle)
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_gauss, cmap=plt.cm.get_cmap('jet'))
-    plt.show()
+    fig1.show()
+    print('Gaussian Bayes Done')
 
     # ---------------------------------------------------------------------
     # KNN Classifier
 
-    KNN = KNNClassifier(50)
+    KNN = KNNClassifier(100)
     KNN.fit(X_train, y_train)
     predicted_KNN = KNN.predict(X_test)
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
 
-    plt.figure()
+    fig1 = plt.figure(2)
+    mytitle = exp_name + ': KNN classifier'
+    fig1.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
-    mytitle = exp_name + ': KNN classifier (Test)'
     plot_classification_results(KNN, data_range, X_test, y=y_test, title=mytitle)
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
-    plt.show()
+    fig1.show()
+    print('KNN Done')
 
 
 
