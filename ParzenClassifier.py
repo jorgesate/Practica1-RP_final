@@ -6,7 +6,7 @@ import numpy as np
 import math
 
 
-class KNNClassifier(BaseEstimator, ClassifierMixin):
+class ParzenClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self):
         self.neigbours = 0

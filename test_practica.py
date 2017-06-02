@@ -9,7 +9,7 @@ from sklearn import metrics, covariance
 from GMMBayes import *
 from GaussianBayes import *
 from KNNClassifier import *
-from ParzenClassifier import *
+# from ParzenClassifier import *
 from sklearn.model_selection import KFold, ShuffleSplit, cross_val_score
 
 
@@ -486,27 +486,25 @@ def main(GAUSSIANS):
     # ---------------------------------------------------------------------
     # KNN Classifier
 
-    KN=KNNClassifier(5)
-    yr=y_train.ravel()
-    Xr=X_train.ravel()
-    KN.fit(X_train, y_train)
-    predicted_KNN = KN.predict(X_test)
+    KNN = KNNClassifier(80)
+    KNN.fit(X_train, y_train.ravel())
+    predicted_KNN = KNN.predict(X_test)
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
 
-    fig1 = plt.figure(2)
+    fig2 = plt.figure(2)
     mytitle = exp_name + ': KNN classifier'
-    fig1.canvas.set_window_title(mytitle)
+    fig2.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
-    plot_classification_results(KN, data_range, X_test, y=y_test, title=mytitle)
+    plot_classification_results(KNN, data_range, X_test, y=y_test, title=mytitle)
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
-    fig1.show()
-    print('KNN Done')
+    fig2.show()
+    # print ('KNN Done. Score: %d   K = %d' + KNN.score(X_test, y_test) + 'K = ' + KNN.k_best)
 
+    print ('KNN Done. Score: {}   K = {}'.format(KNN.score(X_test, y_test), KNN.k_best))
 
-
-    #-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
     #-----------------------------------------------------------------------
 
@@ -516,8 +514,10 @@ def main(GAUSSIANS):
 
     # Parzen ==> Implentar y evaluar (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-fold)
     
-    # K-NN ==> Implentar y evaluar (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-fold)
+    # K-NN ==> Implentar y evaluar (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-f/old)
 
+    plt.figure()
+    plt.show()
 
 if __name__ == "__main__":
 
