@@ -9,12 +9,14 @@ from sklearn import metrics, covariance
 from GMMBayes import *
 from GaussianBayes import *
 from KNNClassifier import *
+from ParzenClassifier import *
+from sklearn.model_selection import KFold, ShuffleSplit, cross_val_score
 
 
 def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.get_cmap('Blues')):
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
-#    plt.colorbar()
+    #    plt.colorbar()
     tick_marks = np.arange(cm.shape[0])
     plt.xticks(tick_marks, range(cm.shape[0]))
     plt.yticks(tick_marks, range(cm.shape[0]))
@@ -28,7 +30,7 @@ def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.get_cmap('Bl
 
     for x in range(width):
         for y in range(height):
-            ax.annotate(str(cm[y,x]), xy=(y, x),
+            ax.annotate(str(cm[y, x]), xy=(y, x),
                         horizontalalignment='center',
                         verticalalignment='center')
 
@@ -52,7 +54,6 @@ def compute_estimated_labels_map(clf, data_range):
 
 
 def plot_classification_results(clf, data_range, X, y=None, title=None):
-
     xx, yy, z = compute_estimated_labels_map(clf, data_range)
     x_min, x_max, y_min, y_max = data_range
 
@@ -106,21 +107,22 @@ def sample_from_gmm(n_samples, gmm):
         X_c = np.concatenate(X_c, axis=0)
         X.append(X_c)
         y.append(c * np.ones((X_c.shape[0], 1)))
- 
+
     X = np.concatenate(X, axis=0)
     y = np.concatenate(y)
 
     return X, y
 
-def rotMatrix(angle, radians=False):
 
+def rotMatrix(angle, radians=False):
     if not radians:
         angle = np.deg2rad(angle)
 
-    R = np.array([[np.cos(angle),  -np.sin(angle)],
+    R = np.array([[np.cos(angle), -np.sin(angle)],
                   [np.sin(angle), np.cos(angle)]])
 
     return R
+
 
 def gmm_classes_1(D):
     # Classes is a list of dictionaries, each class is a dictionary
@@ -212,7 +214,7 @@ def gmm_classes_2(D):
     R = rotMatrix(45)
 
     # Class number 0 (it is a mixture of  gaussians around a circle).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 8
     radius = D / 5.
@@ -228,7 +230,7 @@ def gmm_classes_2(D):
         mu_y = D / 2. + radius * np.sin(angle)
         means_[j, :] = np.array([mu_y, mu_x])
 
-        cov = np.array([[3*VAR, 0],
+        cov = np.array([[3 * VAR, 0],
                         [0, VAR]])
         R = rotMatrix(np.rad2deg(cov_angle))
         covs_[:, :, j] = np.dot(R.T, np.dot(cov, R))
@@ -244,7 +246,7 @@ def gmm_classes_2(D):
     classes.append(class_dict)
 
     # Class number 2 (it is a mixture of  gaussians around a circle).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 8
     radius = 2.5 * D / 6.
@@ -260,7 +262,7 @@ def gmm_classes_2(D):
         mu_y = D / 2. + radius * np.sin(angle)
         means_[j, :] = np.array([mu_y, mu_x])
 
-        cov = np.array([[4*VAR, 0],
+        cov = np.array([[4 * VAR, 0],
                         [0, VAR]])
         R = rotMatrix(np.rad2deg(cov_angle))
         covs_[:, :, j] = np.dot(R.T, np.dot(cov, R))
@@ -276,7 +278,7 @@ def gmm_classes_2(D):
     classes.append(class_dict)
 
     # Class number 3 (it is a mixture of 3 gaussians).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 3
     covs_ = np.zeros((2, 2, num_gaussians))
@@ -284,19 +286,20 @@ def gmm_classes_2(D):
     weights_ = np.zeros((num_gaussians, 1))
     cov = np.array([[VAR, 0],
                     [0, VAR]])
-    covs_[:,:,0] = cov
-    means_[0,:] = np.array([D / 2, D / 2])
-    covs_[:,:,1] = cov
-    means_[1,:] = np.array([7*(D / 8.), 7*(D / 8.)])
-    covs_[:,:,2] = cov
-    means_[2,:] = np.array([D / 8., D / 8.])
+    covs_[:, :, 0] = cov
+    means_[0, :] = np.array([D / 2, D / 2])
+    covs_[:, :, 1] = cov
+    means_[1, :] = np.array([7 * (D / 8.), 7 * (D / 8.)])
+    covs_[:, :, 2] = cov
+    means_[2, :] = np.array([D / 8., D / 8.])
     class_dict['covs'] = covs_
     class_dict['means'] = means_
-    class_dict['weights'] = np.array([1./3., 1./3., 1./3.])
+    class_dict['weights'] = np.array([1. / 3., 1. / 3., 1. / 3.])
     class_dict['prior'] = 1. / 3.
     classes.append(class_dict)
 
     return classes
+
 
 def gmm_classes_3(D):
     # Classes is a list of dictionaries, each class is a dictionary
@@ -306,16 +309,16 @@ def gmm_classes_3(D):
     #   - 'weights', a numpy array (n_gaussians x 1)
     #   - 'prior', a float with class prior.
     classes = []
-    
+
     R = rotMatrix(45)
 
     # Class number 0 (it is a mixture of  gaussians around a circle).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 8
     radius = D / 5.
     angle = 0
-#    angle_inc = 2 * math.pi / num_gaussians
+    #    angle_inc = 2 * math.pi / num_gaussians
     angle_inc = 1.2 * math.pi / num_gaussians
     cov_angle = 0.
     covs_ = np.zeros((2, 2, num_gaussians))
@@ -327,7 +330,7 @@ def gmm_classes_3(D):
         mu_y = (D / 10.) + (D / 2.) + radius * np.sin(angle)
         means_[j, :] = np.array([mu_y, mu_x])
 
-        cov = np.array([[3*VAR, 0],
+        cov = np.array([[3 * VAR, 0],
                         [0, VAR]])
         R = rotMatrix(np.rad2deg(cov_angle))
         covs_[:, :, j] = np.dot(R.T, np.dot(cov, R))
@@ -339,16 +342,16 @@ def gmm_classes_3(D):
     class_dict['covs'] = covs_
     class_dict['means'] = means_
     class_dict['weights'] = weights_
-    class_dict['prior'] = 1. / 2. 
+    class_dict['prior'] = 1. / 2.
     classes.append(class_dict)
 
     ## Class number 1 (it is a mixture of  gaussians around a circle).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 8
     radius = D / 5.
     angle = 0.8 * math.pi
-#    angle_inc = 2 * math.pi / num_gaussians
+    #    angle_inc = 2 * math.pi / num_gaussians
     angle_inc = 1.2 * math.pi / num_gaussians
     cov_angle = 0.
     covs_ = np.zeros((2, 2, num_gaussians))
@@ -360,7 +363,7 @@ def gmm_classes_3(D):
         mu_y = (D / 2.) - (D / 10.) + radius * np.sin(angle)
         means_[j, :] = np.array([mu_y, mu_x])
 
-        cov = np.array([[3*VAR, 0],
+        cov = np.array([[3 * VAR, 0],
                         [0, VAR]])
         R = rotMatrix(np.rad2deg(cov_angle))
         covs_[:, :, j] = np.dot(R.T, np.dot(cov, R))
@@ -372,16 +375,16 @@ def gmm_classes_3(D):
     class_dict['covs'] = covs_
     class_dict['means'] = means_
     class_dict['weights'] = weights_
-    class_dict['prior'] = 1. / 2. 
+    class_dict['prior'] = 1. / 2.
     classes.append(class_dict)
 
     ## Class number 1 (it is a mixture of  gaussians around a circle).
-    VAR = D/10
+    VAR = D / 10
     class_dict = {}
     num_gaussians = 8
     radius = 2. * D / 5.
     angle = 0.8 * math.pi
-#    angle_inc = 2 * math.pi / num_gaussians
+    #    angle_inc = 2 * math.pi / num_gaussians
     angle_inc = 1.2 * math.pi / num_gaussians
     cov_angle = 0.
     covs_ = np.zeros((2, 2, num_gaussians))
@@ -393,7 +396,7 @@ def gmm_classes_3(D):
         mu_y = (D / 2.) - (D / 10.) + radius * np.sin(angle)
         means_[j, :] = np.array([mu_y, mu_x])
 
-        cov = np.array([[3*VAR, 0],
+        cov = np.array([[3 * VAR, 0],
                         [0, VAR]])
         R = rotMatrix(np.rad2deg(cov_angle))
         covs_[:, :, j] = np.dot(R.T, np.dot(cov, R))
@@ -405,37 +408,36 @@ def gmm_classes_3(D):
     class_dict['covs'] = covs_
     class_dict['means'] = means_
     class_dict['weights'] = weights_
-    class_dict['prior'] = 1. / 2. 
+    class_dict['prior'] = 1. / 2.
     classes.append(class_dict)
-    
+
     return classes
 
 
 def main(GAUSSIANS):
-
     # Set an square size on the feature space in order to
     # generate ground thruth distribution of classes on it.
     square_size = 50.
 
     # Choose the ground thruth distribution of the classes
     if GAUSSIANS == 1:  # 4 classess
-        real_classes = gmm_classes_1(square_size) #, var_data)
+        real_classes = gmm_classes_1(square_size)  # , var_data)
         n_samples_train = np.array([200, 200, 200, 200])
         n_samples_test = [1000, 1000, 1000, 1000]
         exp_name = 'Gaussians 1'
-    elif GAUSSIANS == 2: # 3 clasess
-        real_classes = gmm_classes_2(square_size) #, var_data)
+    elif GAUSSIANS == 2:  # 3 clasess
+        real_classes = gmm_classes_2(square_size)  # , var_data)
         n_samples_train = np.array([200, 200, 200])
         n_samples_test = [1000, 1000, 1000]
         exp_name = 'Gaussians 2'
-    elif GAUSSIANS == 3: # 3 clasess
-        real_classes = gmm_classes_3(square_size) #, var_data)
+    elif GAUSSIANS == 3:  # 3 clasess
+        real_classes = gmm_classes_3(square_size)  # , var_data)
         n_samples_train = np.array([200, 200, 200])
         n_samples_test = [1000, 1000, 1000]
         exp_name = 'Gaussians 3 - Balanced'
-    elif GAUSSIANS == 4: # 3 clases
-        real_classes = gmm_classes_3(square_size) #, var_data)
-        n_samples_train = np.array([100, 200, 700])
+    elif GAUSSIANS == 4:  # 3 clases
+        real_classes = gmm_classes_3(square_size)  # , var_data)
+        n_samples_train = np.array([100, 200, 700]) #np.array([100, 200, 700])
         n_samples_test = [1000, 1000, 1000]
         exp_name = 'Gaussians 3 - Unbalanced'
 
@@ -450,7 +452,7 @@ def main(GAUSSIANS):
     x_min, x_max = X_train[:, 0].min() - 1, X_train[:, 0].max() + 1
     y_min, y_max = X_train[:, 1].min() - 1, X_train[:, 1].max() + 1
     data_range = (x_min, x_max, y_min, y_max)
-    xx,yy,z = compute_estimated_labels_map(clf, data_range)
+    xx, yy, z = compute_estimated_labels_map(clf, data_range)
 
     # Plot the classification ground truth Bayes min error boundaries.
     fig0 = plt.figure(0)
@@ -484,11 +486,11 @@ def main(GAUSSIANS):
     # ---------------------------------------------------------------------
     # KNN Classifier
 
-    KNN = KNNClassifier(50)
+    KN=KNNClassifier(5)
     yr=y_train.ravel()
     Xr=X_train.ravel()
-    KNN.fit(X_train, yr)
-    predicted_KNN = KNN.predict(X_test)
+    KN.fit(X_train, y_train)
+    predicted_KNN = KN.predict(X_test)
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
 
@@ -496,7 +498,7 @@ def main(GAUSSIANS):
     mytitle = exp_name + ': KNN classifier'
     fig1.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
-    plot_classification_results(KNN, data_range, X_test, y=y_test, title=mytitle)
+    plot_classification_results(KN, data_range, X_test, y=y_test, title=mytitle)
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
     fig1.show()
