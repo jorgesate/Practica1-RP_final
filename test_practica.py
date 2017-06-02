@@ -9,12 +9,6 @@ from sklearn import metrics, covariance
 from GMMBayes import *
 from GaussianBayes import *
 from KNNClassifier import *
-try:
-    # for Python2
-    from Tkinter import *   # notice capitalized T in Tkinter
-except ImportError:
-    # for Python3
-    from tkinter import *   # notice lowercase 't' in tkinter here
 
 
 def plot_confusion_matrix(cm, title='Confusion matrix', cmap=plt.cm.get_cmap('Blues')):
@@ -490,8 +484,10 @@ def main(GAUSSIANS):
     # ---------------------------------------------------------------------
     # KNN Classifier
 
-    KNN = KNNClassifier(100)
-    KNN.fit(X_train, y_train)
+    KNN = KNNClassifier(50)
+    yr=y_train.ravel()
+    Xr=X_train.ravel()
+    KNN.fit(X_train, yr)
     predicted_KNN = KNN.predict(X_test)
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
