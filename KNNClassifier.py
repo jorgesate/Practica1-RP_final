@@ -3,7 +3,6 @@ from sklearn.base import ClassifierMixin
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import cross_val_score
 import numpy as np
-import math
 
 # KNeighborsClassifier(n_neighbors=5, weights='uniform''distance', algorithm='auto',
 #       leaf_size=30, p=2, metric='minkowski', metric_params=None, n_jobs=1, **kwargs)

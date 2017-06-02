@@ -1,10 +1,8 @@
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
 from sklearn.neighbors import RadiusNeighborsClassifier
-from sklearn.neighbors import KernelDensity
 from sklearn.model_selection import cross_val_score
 import numpy as np
-import math
 
 
 class ParzenClassifier(BaseEstimator, ClassifierMixin):
@@ -36,6 +34,7 @@ class ParzenClassifier(BaseEstimator, ClassifierMixin):
 
         return self.PARZclsf_best.predict(X)
 
+    '''
     # def fit(self, X, y):
     #
     #     mean = []
@@ -54,4 +53,4 @@ class ParzenClassifier(BaseEstimator, ClassifierMixin):
     # def predict(self, X):
     #
     #     return np.argmax(self.PARZclsf_best.score_samples(X))
-
+    '''
