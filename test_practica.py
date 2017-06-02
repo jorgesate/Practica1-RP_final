@@ -481,7 +481,7 @@ def main(GAUSSIANS):
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_gauss, cmap=plt.cm.get_cmap('jet'))
     fig1.show()
-    print('Gaussian Bayes Done')
+    print ('Gaussian Bayes (Test) Done. Score: {:.2f}'.format(gaussBayes.score(X_test, y_test)))
 
     # ---------------------------------------------------------------------
     # KNN Classifier
@@ -500,9 +500,8 @@ def main(GAUSSIANS):
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
     fig2.show()
-    # print ('KNN Done. Score: %d   K = %d' + KNN.score(X_test, y_test) + 'K = ' + KNN.k_best)
 
-    print ('KNN Done. Score: {}   K = {}'.format(KNN.score(X_test, y_test), KNN.k_best))
+    print ('KNN Done. Score: {:.2f}  K = {:d}'.format(KNN.score(X_test, y_test), KNN.k_best))
 
 #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
