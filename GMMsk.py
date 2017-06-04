@@ -14,8 +14,12 @@ class GMMClassifierSk(BaseEstimator, ClassifierMixin):
         self.ns = np.arange(self.nmin, self.nmax + 1, self.nstep)
         self.GMMclsf_best = None
         self.n_best = 0
+        self.covariances = ['full', 'tied', 'diag', 'spherical']
 
     def fit(self, X, y):
+
+        for c in self.covariances:
+            print(c)
 
         mean = []
         for n in self.ns:
