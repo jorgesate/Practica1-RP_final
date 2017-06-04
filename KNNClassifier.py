@@ -17,19 +17,20 @@ class KNNClassifier(BaseEstimator, ClassifierMixin):
         self.ks = np.arange(self.kmin, self.kmax + 1, self.kstep)
         self.KNNclsf_best = None
         self.k_best = 0
+        self.weights = 'uniform'
 
     def fit(self, X, y):
 
         mean = []
         for k in self.ks:
-            KNNclsf = KNeighborsClassifier(n_neighbors=k, weights='uniform')
+            KNNclsf = KNeighborsClassifier(n_neighbors=k, weights=self.weights)
             # TODO probar con weights 'distance' tambien. default: weights='uniform'
             score_k = cross_val_score(KNNclsf, X, y, cv=5, scoring='f1_macro')
             mean.append(np.mean(score_k))
 
         n_max = np.argmax(mean)
         self.k_best = self.ks[n_max]
-        self.KNNclsf_best = KNeighborsClassifier(n_neighbors=self.k_best, weights='uniform').fit(X, y)
+        self.KNNclsf_best = KNeighborsClassifier(n_neighbors=self.k_best, weights=self.weights).fit(X, y)
 
         return self
 

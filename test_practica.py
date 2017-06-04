@@ -455,7 +455,7 @@ def main(GAUSSIANS):
     xx, yy, z = compute_estimated_labels_map(clf, data_range)
 
     # Plot the classification ground truth Bayes min error boundaries.
-    fig0 = plt.figure(0)
+    fig0 = plt.figure(0, figsize=(10, 6), dpi=100)
     mytitle = exp_name + ' real class boundaries + Training samples'
     fig0.canvas.set_window_title(mytitle)
     plt.subplot(1, 2, 1)
@@ -473,7 +473,7 @@ def main(GAUSSIANS):
 
     conf_matrix_gauss = metrics.confusion_matrix(y_test, predicted_bayes)
 
-    fig1 = plt.figure(1)
+    fig1 = plt.figure(1, figsize=(10, 6), dpi=100)
     mytitle = exp_name + ': Gaussian Bayes classifier (Test)'
     fig1.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -492,7 +492,7 @@ def main(GAUSSIANS):
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
 
-    fig2 = plt.figure(2)
+    fig2 = plt.figure(2, figsize=(10, 6), dpi=100)
     mytitle = exp_name + ': KNN classifier'
     fig2.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -506,22 +506,22 @@ def main(GAUSSIANS):
     # ---------------------------------------------------------------------
     # PARZEN Classifier
 
-    PARZ = ParzenClassifier(80)
+    PARZ = ParzenClassifier(60)
     PARZ.fit(X_train, y_train.ravel())
     predicted_PARZ = PARZ.predict(X_test)
 
     conf_matrix_PARZ = metrics.confusion_matrix(y_test, predicted_PARZ)
 
-    fig2 = plt.figure(2)
+    fig3= plt.figure(3, figsize=(10, 6), dpi=100)
     mytitle = exp_name + ': Parzen classifier'
-    fig2.canvas.set_window_title(mytitle)
+    fig3.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
     plot_classification_results(PARZ, data_range, X_test, y=y_test, title=mytitle)
     plt.subplot(1,2,2)
     plot_confusion_matrix(conf_matrix_PARZ, cmap=plt.cm.get_cmap('jet'))
-    fig2.show()
+    fig3.show()
 
-    print ('Parzen Done. Score: {:.2f}  K = {:d}'.format(PARZ.score(X_test, y_test), PARZ.r_best))
+    print ('Parzen Done. Score: {:.2f}  r = {:d}'.format(PARZ.score(X_test, y_test), PARZ.r_best))
 
 #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
