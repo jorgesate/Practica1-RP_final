@@ -7,6 +7,7 @@ import math
 from matplotlib.colors import ListedColormap
 from sklearn import metrics, covariance
 from GMMBayes import *
+from GMMsk import *
 from GaussianBayes import *
 from KNNClassifier import *
 from ParzenClassifier import *
@@ -522,6 +523,26 @@ def main(GAUSSIANS):
     fig3.show()
 
     print ('Parzen Done. Score: {:.2f}  r = {:d}'.format(PARZ.score(X_test, y_test), PARZ.r_best))
+
+    # ---------------------------------------------------------------------
+    # GMM Classifier
+
+    GMM = GMMClassifierSk(4)
+    GMM.fit(X_train, y_train.ravel())
+    predicted_GMM = GMM.predict(X_test)
+
+    conf_matrix_GMM = metrics.confusion_matrix(y_test, predicted_GMM)
+
+    fig4 = plt.figure(4, figsize=(10, 6), dpi=100)
+    mytitle = exp_name + ': GMM classifier'
+    fig4.canvas.set_window_title(mytitle)
+    plt.subplot(1,2,1)
+    plot_classification_results(GMM, data_range, X_test, y=y_test, title=mytitle)
+    plt.subplot(1,2,2)
+    plot_confusion_matrix(conf_matrix_GMM, cmap=plt.cm.get_cmap('jet'))
+    fig4.show()
+
+    print ('GMM Done. Score: {:.2f}  r = {:d}'.format(GMM.score(X_test, y_test), GMM.n_best))
 
 #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
