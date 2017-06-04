@@ -34,7 +34,7 @@ class KNNClassifier(BaseEstimator, ClassifierMixin):
 
             m_max = np.argmax(mean_k)
             self.k_best = self.ks[m_max]
-            mean_w.append(self.k_best)
+            mean_w.append(max(mean_k))
 
         w_max = np.argmax(mean_w)
         self.w_best = self.weights[w_max]

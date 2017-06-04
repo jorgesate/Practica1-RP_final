@@ -14,20 +14,29 @@ class ParzenClassifier(BaseEstimator, ClassifierMixin):
         self.rs = np.arange(self.rmin, self.rmax + 1, self.rstep)
         self.PARZclsf_best = None
         self.r_best = 0
-        self.weights = 'distance'
+        self.weights = ['uniform', 'distance']
+        self.w_best = None
 
     def fit(self, X, y):
 
-        mean = []
-        for r in self.rs:
-            PARZclsf = RadiusNeighborsClassifier(radius=r, weights=self.weights)
-            # TODO probar con weights 'distance' tambien. default: weights='uniform'
-            score_r = cross_val_score(PARZclsf, X, y, cv=5, scoring='f1_macro')
-            mean.append(np.mean(score_r))
+        mean_w = []
+        for w in self.weights:
 
-        n_max = np.argmax(mean)
-        self.r_best = self.rs[n_max]
-        self.PARZclsf_best = RadiusNeighborsClassifier(radius=self.r_best, weights=self.weights).fit(X, y)
+            mean_r = []
+            for r in self.rs:
+                PARZclsf = RadiusNeighborsClassifier(radius=r, weights=w)
+                # TODO probar con weights 'distance' tambien. default: weights='uniform'
+                score_r = cross_val_score(PARZclsf, X, y, cv=5, scoring='f1_macro')
+                mean_r.append(np.mean(score_r))
+
+            n_max = np.argmax(mean_r)
+            self.r_best = self.rs[n_max]
+            mean_w.append(max(mean_r))
+
+        w_max = np.argmax(mean_w)
+        self.w_best = self.weights[w_max]
+
+        self.PARZclsf_best = RadiusNeighborsClassifier(radius=self.r_best, weights=self.w_best).fit(X, y)
 
         return self
 

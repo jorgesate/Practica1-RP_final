@@ -502,7 +502,7 @@ def main(GAUSSIANS):
     plot_confusion_matrix(conf_matrix_KNN, cmap=plt.cm.get_cmap('jet'))
     fig2.show()
 
-    print ('KNN Done. Score: {:.2f}  K = {:d}'.format(KNN.score(X_test, y_test), KNN.k_best))
+    print ('KNN Done. Score: {:.2f}  K = {:d} Weights = {}'.format(KNN.score(X_test, y_test), KNN.k_best, KNN.w_best))
 
     # ---------------------------------------------------------------------
     # PARZEN Classifier
@@ -522,7 +522,7 @@ def main(GAUSSIANS):
     plot_confusion_matrix(conf_matrix_PARZ, cmap=plt.cm.get_cmap('jet'))
     fig3.show()
 
-    print ('Parzen Done. Score: {:.2f}  r = {:d}'.format(PARZ.score(X_test, y_test), PARZ.r_best))
+    print ('Parzen Done. Score: {:.2f}  r = {:d} Weights = {}'.format(PARZ.score(X_test, y_test), PARZ.r_best, PARZ.w_best))
 
     # ---------------------------------------------------------------------
     # GMM Classifier

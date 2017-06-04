@@ -18,9 +18,6 @@ class GMMClassifierSk(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
 
-        for c in self.covariances:
-            print(c)
-
         mean = []
         for n in self.ns:
             GMMclsf = GaussianMixture(n_components=n, covariance_type='full')
