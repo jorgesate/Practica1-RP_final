@@ -25,7 +25,6 @@ class ParzenClassifier(BaseEstimator, ClassifierMixin):
             mean_r = []
             for r in self.rs:
                 PARZclsf = RadiusNeighborsClassifier(radius=r, weights=w)
-                # TODO probar con weights 'distance' tambien. default: weights='uniform'
                 score_r = cross_val_score(PARZclsf, X, y, cv=5, scoring='f1_macro')
                 mean_r.append(np.mean(score_r))
 

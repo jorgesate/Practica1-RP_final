@@ -28,7 +28,6 @@ class KNNClassifier(BaseEstimator, ClassifierMixin):
             mean_k = []
             for k in self.ks:
                 KNNclsf = KNeighborsClassifier(n_neighbors=k, weights=w)
-                # TODO probar con weights 'distance' tambien. default: weights='uniform'
                 score_k = cross_val_score(KNNclsf, X, y, cv=5, scoring='f1_macro')
                 mean_k.append(np.mean(score_k))
 

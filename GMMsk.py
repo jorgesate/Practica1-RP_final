@@ -14,20 +14,28 @@ class GMMClassifierSk(BaseEstimator, ClassifierMixin):
         self.ns = np.arange(self.nmin, self.nmax + 1, self.nstep)
         self.GMMclsf_best = None
         self.n_best = 0
-        self.covariances = ['full', 'tied', 'diag', 'spherical']
+        self.covs = ['full', 'tied', 'diag', 'spherical']
+        self.cov_best = None
 
     def fit(self, X, y):
 
-        mean = []
-        for n in self.ns:
-            GMMclsf = GaussianMixture(n_components=n, covariance_type='full')
-            # TODO probar con weights 'distance' tambien. default: weights='uniform'
-            score_k = cross_val_score(GMMclsf, X, y, cv=5, scoring='f1_macro')
-            mean.append(np.mean(score_k))
+        mean_covs = []
+        for c in self.covs:
 
-        n_max = np.argmax(mean)
-        self.n_best = self.ns[n_max]
-        self.GMMclsf_best = GaussianMixture(n_components=n, covariance_type='full').fit(X, y)
+            mean_n = []
+            for n in self.ns:
+                GMMclsf = GaussianMixture(n_components=n, covariance_type=c)
+                score_k = cross_val_score(GMMclsf, X, y, cv=5, scoring='f1_macro')
+                mean_n.append(np.mean(score_k))
+
+            n_max = np.argmax(mean_n)
+            self.n_best = self.ns[n_max]
+            mean_covs.append(max(mean_n))
+
+        cov_max = np.argmax(mean_covs)
+        self.cov_best = self.covs[cov_max]
+
+        self.GMMclsf_best = GaussianMixture(n_components=self.n_best, covariance_type=self.cov_best).fit(X, y)
 
         return self
 

@@ -513,7 +513,7 @@ def main(GAUSSIANS):
 
     conf_matrix_PARZ = metrics.confusion_matrix(y_test, predicted_PARZ)
 
-    fig3= plt.figure(3, figsize=(10, 6), dpi=100)
+    fig3 = plt.figure(3, figsize=(10, 6), dpi=100)
     mytitle = exp_name + ': Parzen classifier'
     fig3.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -542,7 +542,7 @@ def main(GAUSSIANS):
     plot_confusion_matrix(conf_matrix_GMM, cmap=plt.cm.get_cmap('jet'))
     fig4.show()
 
-    print ('GMM Done. Score: {:.2f}  r = {:d}'.format(GMM.score(X_test, y_test), GMM.n_best))
+    print ('GMM Done. Score: {:.2f}  r = {:d} Cov = {}'.format(GMM.score(X_test, y_test), GMM.n_best, GMM.cov_best))
 
 #-----------------------------------------------------------------------
     # PARTE A TERMINAR EN LA PRACTICA
