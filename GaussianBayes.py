@@ -29,7 +29,7 @@ class GaussianBayes(BaseEstimator, ClassifierMixin):
         self.mean_ = None
         self.cov_ = None
         self.invcov_ = None
-        self.class_prior_ = None
+        self.class_prior_ = class_prior
 
 
     def fit(self, X, y, fit_prior=True, class_prior=None):
@@ -73,7 +73,7 @@ class GaussianBayes(BaseEstimator, ClassifierMixin):
         labels = np.unique(y)
         for i in range(len(labels)):
             c = labels[i]
-            self.class_count_[i] = np.sum(y==c)
+            self.class_count_[i] = np.sum(y==c) # numero de datos de esa clase
             Xc = X[(y==c).ravel(), :] # c class data
             self.mean_[i,:] = np.mean(Xc, axis=0)
             CovEstimator.fit(Xc) # store_precision=True to get the inverse covariance too.

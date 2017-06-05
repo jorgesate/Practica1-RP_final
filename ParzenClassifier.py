@@ -19,21 +19,23 @@ class ParzenClassifier(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
 
-        mean_w = []
+        scores_matrix = np.zeros([len(self.weights), len(self.rs)])
         for w in self.weights:
 
-            mean_r = []
             for r in self.rs:
                 PARZclsf = RadiusNeighborsClassifier(radius=r, weights=w)
                 score_r = cross_val_score(PARZclsf, X, y, cv=5, scoring='f1_macro')
-                mean_r.append(np.mean(score_r))
 
-            n_max = np.argmax(mean_r)
-            self.r_best = self.rs[n_max]
-            mean_w.append(max(mean_r))
+                mean_score = np.mean(score_r)
 
-        w_max = np.argmax(mean_w)
-        self.w_best = self.weights[w_max]
+                xx = np.where(self.rs == r)[0][0]
+                yy = self.weights.index(w)
+
+                scores_matrix[yy, xx] = mean_score
+
+        i, j = np.unravel_index(scores_matrix.argmax(), scores_matrix.shape)
+        self.r_best = self.rs[j]
+        self.w_best = self.weights[i]
 
         self.PARZclsf_best = RadiusNeighborsClassifier(radius=self.r_best, weights=self.w_best).fit(X, y)
 

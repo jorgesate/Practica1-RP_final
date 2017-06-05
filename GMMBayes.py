@@ -3,6 +3,10 @@
 import numpy as np
 import math
 from sklearn import covariance
+from sklearn.mixture import GaussianMixture
+from GaussianBayes import *
+from sklearn.model_selection import cross_val_score
+
 
 #An example of a class
 class GMMBayes:
@@ -28,6 +32,11 @@ class GMMBayes:
         #   - 'prior', a float with class prior.
 
         self.classes_ = classes
+        self.mean_ = 0
+        self.cov_ = 0
+        self.invcov_ = 0
+        self.class_prior_ = None
+        self.class_count_ = None
 
 
     def fit(self, X, y, fit_prior=True, class_prior=None):
@@ -44,6 +53,25 @@ class GMMBayes:
         self : object
             Returns self.
         """
+
+        mean_w = []
+        for w in self.weights:
+
+            mean_k = []
+            for k in self.ks:
+                gaussian_clsf = GaussianBayes()
+                score_k = cross_val_score(gaussian_clsf, X, y, cv=5, scoring='f1_macro')
+                mean_k.append(np.mean(score_k))
+
+            m_max = np.argmax(mean_k)
+            self.k_best = self.ks[m_max]
+            mean_w.append(max(mean_k))
+
+        w_max = np.argmax(mean_w)
+        self.w_best = self.weights[w_max]
+
+        self.KNNclsf_best = GaussianBayes().fit(X, y)
+
         return self
 
 
@@ -58,8 +86,8 @@ class GMMBayes:
         C : array, shape = [n_samples]
             Predicted target values for X
         """
-        n_classes = len(self.classes_)
-        n_features = self.classes_[0]['covs'].shape[0]
+        n_classes = len(self.classes_) # 4
+        n_features = self.classes_[0]['covs'].shape[0] # 2
         n_samples = X.shape[0]
         posteriors = np.zeros((n_classes,n_samples))
         for c in range(n_classes):

@@ -22,21 +22,22 @@ class KNNClassifier(BaseEstimator, ClassifierMixin):
 
     def fit(self, X, y):
 
-        mean_w = []
+        scores_matrix = np.zeros([len(self.weights), len(self.ks)])
         for w in self.weights:
 
-            mean_k = []
             for k in self.ks:
                 KNNclsf = KNeighborsClassifier(n_neighbors=k, weights=w)
                 score_k = cross_val_score(KNNclsf, X, y, cv=5, scoring='f1_macro')
-                mean_k.append(np.mean(score_k))
+                mean_score = np.mean(score_k)
 
-            m_max = np.argmax(mean_k)
-            self.k_best = self.ks[m_max]
-            mean_w.append(max(mean_k))
+                xx = np.where(self.ks == k)[0][0]
+                yy = self.weights.index(w)
 
-        w_max = np.argmax(mean_w)
-        self.w_best = self.weights[w_max]
+                scores_matrix[yy, xx] = mean_score
+
+        i, j = np.unravel_index(scores_matrix.argmax(), scores_matrix.shape)
+        self.k_best = self.ks[j]
+        self.w_best = self.weights[i]
 
         self.KNNclsf_best = KNeighborsClassifier(n_neighbors=self.k_best, weights=self.w_best).fit(X, y)
 

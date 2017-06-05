@@ -456,7 +456,7 @@ def main(GAUSSIANS):
     xx, yy, z = compute_estimated_labels_map(clf, data_range)
 
     # Plot the classification ground truth Bayes min error boundaries.
-    fig0 = plt.figure(0, figsize=(10, 6), dpi=100)
+    fig0 = plt.figure(0, figsize=(12, 6), dpi=100)
     mytitle = exp_name + ' real class boundaries + Training samples'
     fig0.canvas.set_window_title(mytitle)
     plt.subplot(1, 2, 1)
@@ -467,6 +467,8 @@ def main(GAUSSIANS):
     fig0.show()
 
     # ----------------------------------------------------------------
+    # Classification
+    # ----------------------------------------------------------------
     # Gaussians based Bayes classifier training and evaluation
     gaussBayes = GaussianBayes()
     gaussBayes.fit(X_train, y_train)
@@ -474,7 +476,7 @@ def main(GAUSSIANS):
 
     conf_matrix_gauss = metrics.confusion_matrix(y_test, predicted_bayes)
 
-    fig1 = plt.figure(1, figsize=(10, 6), dpi=100)
+    fig1 = plt.figure(1, figsize=(12, 6), dpi=100)
     mytitle = exp_name + ': Gaussian Bayes classifier (Test)'
     fig1.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -485,15 +487,53 @@ def main(GAUSSIANS):
     print ('Gaussian Bayes (Test) Done. Score: {:.2f}'.format(gaussBayes.score(X_test, y_test)))
 
     # ---------------------------------------------------------------------
-    # KNN Classifier
+    # GMM Sk-Learn Classifier
+    GMM = GMMClassifierSk(10)
+    GMM.fit(X_train, y_train.ravel())
+    predicted_GMM = GMM.predict(X_test)
 
+    conf_matrix_GMM = metrics.confusion_matrix(y_test, predicted_GMM)
+
+    fig4 = plt.figure(4, figsize=(12, 6), dpi=100)
+    mytitle = exp_name + ': GMM classifier'
+    fig4.canvas.set_window_title(mytitle)
+    plt.subplot(1,2,1)
+    plot_classification_results(GMM, data_range, X_test, y=y_test, title=mytitle)
+    plt.subplot(1,2,2)
+    plot_confusion_matrix(conf_matrix_GMM, cmap=plt.cm.get_cmap('jet'))
+    fig4.show()
+
+    print ('GMM Sk-Learn Done. Score: {:.2f}  n = {} Cov = {}'.format(GMM.score(X_test, y_test), GMM.n_best, GMM.cov_best))
+
+    # ---------------------------------------------------------------------
+    # GMMBayes Classifier
+    # GMMBay = GMMBayes(10)
+    # GMMBay.fit(X_train, y_train.ravel())
+    # predicted_GMMBay = GMMBay.predict(X_test)
+    #
+    # conf_matrix_GMMBay = metrics.confusion_matrix(y_test, predicted_GMMBay)
+    #
+    # fig5 = plt.figure(5, figsize=(12, 6), dpi=100)
+    # mytitle = exp_name + ': GMM classifier'
+    # fig5.canvas.set_window_title(mytitle)
+    # plt.subplot(1,2,1)
+    # plot_classification_results(GMMBay, data_range, X_test, y=y_test, title=mytitle)
+    # plt.subplot(1,2,2)
+    # plot_confusion_matrix(conf_matrix_GMMBay, cmap=plt.cm.get_cmap('jet'))
+    # fig5.show()
+
+    # print ('GMM Bayes Done. Score: {:.2f}  n = {:d} Cov = {}'.format(GMMBay.score(X_test, y_test),
+    #                                                                  GMMBay.n_best, GMMBay.cov_best))
+
+    # ---------------------------------------------------------------------
+    # KNN Classifier
     KNN = KNNClassifier(80)
     KNN.fit(X_train, y_train.ravel())
     predicted_KNN = KNN.predict(X_test)
 
     conf_matrix_KNN = metrics.confusion_matrix(y_test, predicted_KNN)
 
-    fig2 = plt.figure(2, figsize=(10, 6), dpi=100)
+    fig2 = plt.figure(2, figsize=(12, 6), dpi=100)
     mytitle = exp_name + ': KNN classifier'
     fig2.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -513,7 +553,7 @@ def main(GAUSSIANS):
 
     conf_matrix_PARZ = metrics.confusion_matrix(y_test, predicted_PARZ)
 
-    fig3 = plt.figure(3, figsize=(10, 6), dpi=100)
+    fig3 = plt.figure(3, figsize=(12, 6), dpi=100)
     mytitle = exp_name + ': Parzen classifier'
     fig3.canvas.set_window_title(mytitle)
     plt.subplot(1,2,1)
@@ -523,38 +563,6 @@ def main(GAUSSIANS):
     fig3.show()
 
     print ('Parzen Done. Score: {:.2f}  r = {:d} Weights = {}'.format(PARZ.score(X_test, y_test), PARZ.r_best, PARZ.w_best))
-
-    # ---------------------------------------------------------------------
-    # GMM Classifier
-
-    GMM = GMMClassifierSk(4)
-    GMM.fit(X_train, y_train.ravel())
-    predicted_GMM = GMM.predict(X_test)
-
-    conf_matrix_GMM = metrics.confusion_matrix(y_test, predicted_GMM)
-
-    fig4 = plt.figure(4, figsize=(10, 6), dpi=100)
-    mytitle = exp_name + ': GMM classifier'
-    fig4.canvas.set_window_title(mytitle)
-    plt.subplot(1,2,1)
-    plot_classification_results(GMM, data_range, X_test, y=y_test, title=mytitle)
-    plt.subplot(1,2,2)
-    plot_confusion_matrix(conf_matrix_GMM, cmap=plt.cm.get_cmap('jet'))
-    fig4.show()
-
-    print ('GMM Done. Score: {:.2f}  r = {:d} Cov = {}'.format(GMM.score(X_test, y_test), GMM.n_best, GMM.cov_best))
-
-#-----------------------------------------------------------------------
-    # PARTE A TERMINAR EN LA PRACTICA
-    #-----------------------------------------------------------------------
-
-    # GMM ==> Falta terminar de implementar GMMBayes.fit y evaluar
-    #                  (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-fold!  - en este caso nu'mero
-    #                   componentes Gaussianas de la mezcla -)
-
-    # Parzen ==> Implentar y evaluar (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-fold)
-    
-    # K-NN ==> Implentar y evaluar (BUSCANDO PARAMETROS POR VAL. CRUZADA 5-f/old)
 
     plt.figure()
     plt.show()
