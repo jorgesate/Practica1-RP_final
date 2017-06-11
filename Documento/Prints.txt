@@ -1,0 +1,27 @@
+
+1:
+Gaussian Bayes (Test) Done. Score: 0.92
+GMM Sk-Learn Done. Score: 0.92  n = [2, 2, 3, 2] Cov = ['diag', 'tied', 'diag', 'tied']
+KNN Done. Score: 0.91  K = 6 Weights = distance
+Parzen Done. Score: 0.78  r = 25 Weights = distance
+
+
+2:
+Gaussian Bayes (Test) Done. Score: 0.77
+GMM Sk-Learn Done. Score: 0.89  n = [3, 3, 3] Cov = ['tied', 'spherical', 'tied']
+KNN Done. Score: 0.94  K = 4 Weights = distance
+Parzen Done. Score: 0.91  r = 52 Weights = distance
+
+
+3:
+Gaussian Bayes (Test) Done. Score: 0.93
+GMM Sk-Learn Done. Score: 0.94  n = [3, 2, 2] Cov = ['tied', 'tied', 'spherical']
+KNN Done. Score: 0.95  K = 3 Weights = uniform
+Parzen Done. Score: 0.94  r = 49 Weights = distance
+
+
+4:
+Gaussian Bayes (Test) Done. Score: 0.64
+GMM Sk-Learn Done. Score: 0.96  n = [3, 3, 3] Cov = ['spherical', 'diag', 'diag']
+KNN Done. Score: 0.96  K = 12 Weights = uniform
+Parzen Done. Score: 0.64  r = 25 Weights = distance
